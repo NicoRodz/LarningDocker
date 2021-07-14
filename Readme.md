@@ -45,7 +45,7 @@ Contains the instruction for docker that will be executed when we build the imag
 ### Docker Cheat Sheet
 | Main Command           |                Sub Command   |                  Comment           |
 |------------------------|------------------------------|----------------------------------- |
-| docker run             | -it                          | Use an interactive terminal        |
+| docker run             | -it                          | Use an interactive terminal (i, interactive)(t, for tty) (input output)        |
 |                        | -ot                          |                                    |
 |                        | build-image-tag              | Run the cmd in docker file for a image (not accessible by port) (Attached)
 |                        | -p "3000:80" build-image-tag | Expose from the local to internal port
@@ -55,10 +55,11 @@ Contains the instruction for docker that will be executed when we build the imag
 | docker ps              |                              | Watch all running containers       |
 |                        |    -a                        | Watch all containers               |
 | docker stop            |      container-name          | stop container by the name        |
-| docker start           | container-id or name   | start a stopped container, this does not block the terminal (Detached)|
-|                        | -a container-id or name   | start a stopped container, this does not block the terminal (Detached)|
-| docker logs            | container-id            | watch the logs from the container |
-|                        | -f container-id         | watch the logs attached to the container |
+| docker start           | container-id or name         | start a stopped container, this does not block the terminal (Detached)|
+|                        | -a container-id or name      | start a stopped container, this does not block the terminal (Detached)|
+|                        | -a -i container-id/name      | Allow to interact with the terminal|
+| docker logs            | container-id                 | watch the logs from the container |
+|                        | -f container-id              | watch the logs attached to the container |
 
 
 ```python
