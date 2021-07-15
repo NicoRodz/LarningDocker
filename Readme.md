@@ -42,6 +42,8 @@ The main artifacts to understand what is docker, are the images and containers. 
 ### Dockerfile
 Contains the instruction for docker that will be executed when we build the image
 
+The tags contains two parts, the name and the image version. This could be defined on local machine or be fetched from the docker hub repository. A combination of these is a unique identifier
+
 ### Docker Cheat Sheet
 | Main Command           |                Sub Command   |                  Comment           |
 |------------------------|------------------------------|----------------------------------- |
@@ -50,8 +52,15 @@ Contains the instruction for docker that will be executed when we build the imag
 |                        | build-image-tag              | Run the cmd in docker file for a image (not accessible by port) (Attached)
 |                        | -p "3000:80" build-image-tag | Expose from the local to internal port
 |                        |-p "3000:80" -d build-image-tag| Works detached
+|                        |-p "3000:80" -d --rm build-image-tag| rm will remove the container when it stop
+|                        |-p "3000:80" -d --rm --name demoapp build-image-tag| will add a specific name
+|                        |-p "3000:80" -d --rm --name demoapp app-name:tag | this will use the image previously created in your local machine
 | docker attach          |        container-id          | Attach the console to container |
+| docker image           | replace image for images     | Fetch images in your computer |
+|                        | inspect image-id             | Look for the image definition |
+|                        | prune -a                     | Remove all images |
 | docker build           |  .                           | Build the image in the same folder |
+| docker build           |  -t app-name:tag .           | Build the image with name and tag |
 | docker ps              |                              | Watch all running containers       |
 |                        |    -a                        | Watch all containers               |
 | docker stop            |      container-name          | stop container by the name        |
@@ -59,8 +68,19 @@ Contains the instruction for docker that will be executed when we build the imag
 |                        | -a container-id or name      | start a stopped container, this does not block the terminal (Detached)|
 |                        | -a -i container-id/name      | Allow to interact with the terminal|
 | docker logs            | container-id                 | watch the logs from the container |
-|                        | -f container-id              | watch the logs attached to the container |
+| docker rm              | separed containers name      | Remove all containers in the list
+| docker rmi             | separed images id            | Remove all images in the list
+| docker cp              | local_folder/. container_name:/test| dot for all content, you can use exclusive file, then the name of the container and the folder
+|                        | container_name:/test local_folder  | Do the reverse copy, from the container to the local folder
 
+
+## Push and Pull Images
+| Main Command           |                Sub Command   |                  Comment           |
+|------------------------|------------------------------|----------------------------------- |
+| docker push            | slaas/slaas-image-name:tag   | slaas is the id for docker account
+| docker tag             | old_name:tag slaas/slaas-image-name:tag | Re-tag already created image 
+| docker pull            | slaas/slaas-image-name:tag   | Download the image from this repository
+| docker run             | slaas/slaas-image-name:tag
 
 ```python
   FROM node # First will look up for the image in local, then from the internet
@@ -90,3 +110,12 @@ EXPOSE 80
 CMD ["node", "server.js"]
 ```
 (i) Check out in the console, when you run `docker build .` there are a lot of packages which uses "cache"
+
+
+# Terraform
+
+terraform apply -var-file var-file.json
+
+
+# SOPS
+sops -e -k arn:aws:kms:us-east-2:.... test.yaml  (encrypt)
