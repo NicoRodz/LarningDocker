@@ -158,6 +158,29 @@ If you do that, remember to replace the CMD in Dockerfile with something like ["
 
 If in the bind volume command you write /somepath:/app:ro, this latest ro tells to docker to use a read only volume 
 
+# Docker ignore file
+
+.dockerignore is a file which will allow you to avoid copy files or folders with COPY command inside of Dockerfile. For example, to avoid copy nodemodules file makes sense because this file could be not updated with the latest changes. This will avoid to copy files from your local storage to the resource files in container.
+
+In addition, you can add `.git, Dockerfile, .gitignore` and othersa
+
+# Environment variables
+
+Docker accept arguments an environment values in runtime which could be set with:
+- docker build --build--arg
+- docker build --env   or simply -e
+
+You can add environment variables in dockerfile with `ENV PORT 80`for example, this will register PORT varibale so you can do also an `EXPOSE $PORT` command
+
+You can use a `.env` variable with all the environment variables and use --env-file .env command to include it int docker run execution.
+
+!important: Remember to include this file in .dockerignore file
+
+Arguments must be defined in dockerfile with `ARG DEFAULT_PORT = 80` for example, and can be used as an argument only in the docker file, with `ENV PORT = $DEFAULT_PORT`.
+`docker build -t feedback-node:dev --build-arg DEFAULT_PORT=80 .`
+
+!important: Put this configuration before the layers which will not be modified by this change, otherwise the layer configuration from docker will reload and recompile all the code in these bad handled layers 
+
 # Terraform
 
 terraform apply -var-file var-file.json
