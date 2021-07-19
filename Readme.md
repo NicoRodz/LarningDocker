@@ -181,6 +181,27 @@ Arguments must be defined in dockerfile with `ARG DEFAULT_PORT = 80` for example
 
 !important: Put this configuration before the layers which will not be modified by this change, otherwise the layer configuration from docker will reload and recompile all the code in these bad handled layers 
 
+# Containers and networks
+
+## From container to the local machine
+To connect from the container to the local machine network (for example, an instance of database), we could use `host.docker.internal` url which will be interpreted by the docker with our local machine ip.
+```
+mongodb://host.docker.internal:27017/dbname
+http://host.docker.internal:PORT
+```
+
+## From container to container
+As example, you can pull a mongodb image from dockerhub and create a new container based on this image, this image will expose a brand new database with ports and all the configuration, imagine you call this container as `mongodb`. After that, you can do `docker container inspect mongod` and get the networkSettings. 
+
+## Networks and containers
+
+You can create a network which contains a lot of containers with `--network my-net`, this allow the containers to communicate between them.
+
+Before you use a network, you need to create this with `docker network create my-net`, also you can use `docker network ls` to see all created networks 
+
+In addition, if you define a name for container in the same network of the other container, you can use the name for this container to make request to a "static" ip
+
+
 # Terraform
 
 terraform apply -var-file var-file.json
