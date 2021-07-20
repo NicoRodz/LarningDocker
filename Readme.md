@@ -201,11 +201,80 @@ Before you use a network, you need to create this with `docker network create my
 
 In addition, if you define a name for container in the same network of the other container, you can use the name for this container to make request to a "static" ip
 
+## Data Persistance
+
+If you include an instance of mongo db with `docker run mongodb` and all required parameters, this data stored in this database will be lost if the container is destroyed. So to persist this information you can simply add a named volume with the path which is specified in the official documentation and persist your data instead if you destroy the container.
+In particular, this image allows you to use username and password from environment variables
+
+# Docker compose
+
+Docker compose is a tool that allow you to replace `docker build, run` command with one orchestration file and commands. You can use a lot of builds or run commands inside one dockercompose configuration.
+
+Docker compose NOT replace Dockerimage, these work together and handle multiple containers in the same machine. Docker compose comes to replace all the commands that you need to execute from the console to assign networks, environments, etc.
+
+[file versions resource](docs.docker.com/compose/compose-file)
+```yaml
+version: "2" #File version
+  services:
+    mongodb:
+      # container_name: mongodb # not required
+      image: 'mongo'
+      volumes:
+        - data:/data/db
+      #environment:
+      #  MONGO_SECRET: secret
+      env_file:
+        - ./env/mongo.env
+      #networks: this network is completely optional.
+      #  - goals-net
+    backend:
+      ports:
+        - '3000:80' #Host port : Container internal port
+      # build: ./backend # relative path to know where is the dockerfile
+      build:
+        context: ./backend
+        dockerfile: Dockerfile-dev
+        args:
+          some-arg: some-value
+      volumes:
+        - logs:/app/logs
+        - ./backend:/app
+        - /app/node_modules
+      env_file:
+        - ./env/backend.env
+      depends_on:
+        - mongodb
+    frontend:
+      build: ./frontend
+      ports:
+        - '3000:3000'
+      volumes:
+        - ./frontend/src:/app/src
+      stdin_open: true
+      tty: true
+      # this combination replace the -it command option required by frontend to work property
+      depends_on:
+        - backend
+volumes:  #Anonymous volume and bind volumes don't need to be specified here
+  data:
+  logs:
+```
+
+All these services are working in the same network created automatically by docker, but also you can include an another network for each service 
+
+```sh
+docker-compose up
+docker-compose up --build # force rebuild for all images and containers
+docker-compose build # rebuild missed images and not started containers 
+docker-compose up -d # to start detached 
+docker-compose down # this doesn't delete volumes
+docker-compose down -v # to remove volumes
+```
 
 # Terraform
 
 terraform apply -var-file var-file.json
 
 
-# SOPS
+# SOPS 
 sops -e -k arn:aws:kms:us-east-2:.... test.yaml  (encrypt)
