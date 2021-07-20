@@ -271,6 +271,45 @@ docker-compose down # this doesn't delete volumes
 docker-compose down -v # to remove volumes
 ```
 
+# Utility containers
+
+with `docker run -it node` we can use an interactive terminal with node running time, this could be useful to prepare others containers with images which belongs from complex applications which needs some configuration in addition. 
+
+we can do:
+
+```bash
+docker run -it -d node 
+dockere exec container_name npm init
+dockere exec -it container_name npm init
+```
+
+Since this is a Utility container, it's good idea to use a lighted image for 'node'. For example, you can use
+```Dockerfile
+FROM node:14-alphine
+
+WORKDIR /app
+
+# CMD npm init
+ENTRYPOINT ["npm"] # this will allow to run container and include, for example, init command
+```
+Then use
+```
+docker build -t npm-util .
+docker run npm-util npm init
+```
+
+## With docker compose approach
+```yaml
+version: "3.8"
+services:
+  npm:
+    build: ./
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./:/app
+```
+ Then we can execute the following command: `docker-compose run npm init` which makes npm services run and give a parameter required by node 
 # Terraform
 
 terraform apply -var-file var-file.json
