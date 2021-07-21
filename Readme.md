@@ -310,6 +310,32 @@ services:
       - ./:/app
 ```
  Then we can execute the following command: `docker-compose run npm init` which makes npm services run and give a parameter required by node 
+
+# AWS CLI
+To make it work's, you need to instal the cli in your computer and include the credentials to authenticate your machine with aws. You can do that with `aws configure` command or configuring it from the file manually.
+
+```bash
+file: ~/.aws/credentials
+
+[default]
+aws_access_key_id=
+aws_secret_access_key=
+```
+
+After that, maybe you want to use an specific available cluster, so you can use the following commands:
+```bash
+~ aws eks list-clusters
+{
+    "clusters": [
+        "cluster1",
+        "cluster"
+    ]
+}
+
+~ aws eks update-kubeconfig --name cluster1
+~ aws eks update-kubeconfig --name cluster2
+```
+This configuration will allow you to use `kubectl` commands from your computer
 # Terraform
 
 terraform apply -var-file var-file.json
