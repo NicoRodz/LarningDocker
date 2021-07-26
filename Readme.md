@@ -261,6 +261,7 @@ volumes:  #Anonymous volume and bind volumes don't need to be specified here
 ```
 
 All these services are working in the same network created automatically by docker, but also you can include an another network for each service 
+In a docker-compose file you can also define a ENTRYPOINT command, which will overload the previous defined ENTRYPOINT in the image
 
 ```sh
 docker-compose up
@@ -269,6 +270,8 @@ docker-compose build # rebuild missed images and not started containers
 docker-compose up -d # to start detached 
 docker-compose down # this doesn't delete volumes
 docker-compose down -v # to remove volumes
+docker-compose run --rm app-name  # To run only this app from docker compose file
+docker-compose run -d app1name app2name # This only run specified apps in the command
 ```
 
 # Utility containers
@@ -310,6 +313,38 @@ services:
       - ./:/app
 ```
  Then we can execute the following command: `docker-compose run npm init` which makes npm services run and give a parameter required by node 
+
+# Docker permissions errors
+When using Docker on Linux, you might face permission errors when adding a bind mount as shown bellow, you can fix this as the following:
+
+```Dockerfile
+FROM php:7.4-fpm-alpine
+ 
+WORKDIR /var/www/html
+ 
+COPY src .
+ 
+RUN docker-php-ext-install pdo pdo_mysql
+ 
+RUN addgroup -g 1000 laravel && adduser -G laravel -g laravel -s /bin/sh -D laravel
+ 
+USER laravel
+```
+```Dockerfile
+FROM composer:latest
+ 
+RUN addgroup -g 1000 laravel && adduser -G laravel -g laravel -s /bin/sh -D laravel
+ 
+USER laravel
+ 
+WORKDIR /var/www/html
+ 
+ENTRYPOINT [ "composer", "--ignore-platform-reqs" ]
+```
+
+This User instruction replace CHOWN commands. These steps should ensure that all files which are created by the Composer container are assigned to a user named "laravel" which exists in all containers which have to work on the files.
+
+Also see this Q&A thread: https://www.udemy.com/course/docker-kubernetes-the-practical-guide/learn/#questions/12986850/
 
 # AWS CLI
 To make it work's, you need to instal the cli in your computer and include the credentials to authenticate your machine with aws. You can do that with `aws configure` command or configuring it from the file manually.
