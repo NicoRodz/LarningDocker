@@ -274,6 +274,11 @@ docker-compose run --rm app-name  # To run only this app from docker compose fil
 docker-compose run -d app1name app2name # This only run specified apps in the command
 ```
 
+To compile with a specific docker file you can use:
+```
+docker build -t app-name:tag -f path/to/other.dockerfile .
+```
+
 # Utility containers
 
 with `docker run -it node` we can use an interactive terminal with node running time, this could be useful to prepare others containers with images which belongs from complex applications which needs some configuration in addition. 
@@ -282,8 +287,8 @@ we can do:
 
 ```bash
 docker run -it -d node 
-dockere exec container_name npm init
-dockere exec -it container_name npm init
+docker exec container_name npm init
+docker exec -it container_name npm init
 ```
 
 Since this is a Utility container, it's good idea to use a lighted image for 'node'. For example, you can use
