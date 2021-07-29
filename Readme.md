@@ -371,6 +371,25 @@ After that, maybe you want to use an specific available cluster, so you can use 
 ~ aws eks update-kubeconfig --name cluster2
 ```
 This configuration will allow you to use `kubectl` commands from your computer
+
+# Deploy app in development or production environment
+- This section assume the host will exist in AWS services.
+
+To perform this, you need to create the following requirements. 
+1. EC2 instance (Connect by ssh and install docker, then run it)
+2. VPC
+3. Security group (and configure it to expose all www ports required)
+
+To install docker in ec2 instance, you need to run the following commands
+1. sudo yum update -y
+2. sudo amazon-linux-extras install docker
+3. sudo service docker start
+4. build and push your image to image registry
+5. Open the security group for this instance and edit inbound rules, add a new rule with http with anywhere policy
+
+Better than this approach, is to use ECS (Elastic containers service)
+
+
 # Terraform
 
 terraform apply -var-file var-file.json
