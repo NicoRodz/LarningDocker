@@ -351,6 +351,37 @@ This User instruction replace CHOWN commands. These steps should ensure that all
 
 Also see this Q&A thread: https://www.udemy.com/course/docker-kubernetes-the-practical-guide/learn/#questions/12986850/
 
+# Docker multistage 
+Every FROM instruction in docker file creates a new stage, even if you use the same image as the previous stage. For example, this should work for a frontend app multistage
+Also, you can name the stages with as key
+```Dockerfile
+FROM node:14-alpine as build
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . . 
+
+RUN npm run build
+
+FROM nginx:stable-alpine
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80 # Required by nginx docker documentation
+
+CMD ["nginx", "-g", "daemon off;"] 
+```
+
+As a feature, you can build or run only one of both stages with the following command
+
+```
+docker build --target build -f frontend/Dockerfile.prod ./frontend
+```
+
 # AWS CLI
 To make it work's, you need to instal the cli in your computer and include the credentials to authenticate your machine with aws. You can do that with `aws configure` command or configuring it from the file manually.
 
